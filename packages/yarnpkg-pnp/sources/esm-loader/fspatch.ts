@@ -19,18 +19,27 @@ if (!HAS_LAZY_LOADED_TRANSLATORS) {
 
   const originalReadFile = binding.readFileUtf8 || binding.readFileSync;
   if (originalReadFile) {
+    let previousPath: string | undefined;
     // @ts-expect-error - No index signature
     binding[originalReadFile.name] = function (...args: Parameters<typeof originalReadFile>) {
+      const currentPath = args[0];
+      if (currentPath === previousPath) {
+        previousPath = undefined;
+        return originalReadFile.apply(this, args);
+      }
       try {
-        return fs.readFileSync(args[0], {
+        previousPath = currentPath;
+        const content = fs.readFileSync(args[0], {
           encoding: `utf8`,
           // @ts-expect-error - The docs says it needs to be a string but
           // links to https://nodejs.org/dist/latest-v20.x/docs/api/fs.html#file-system-flags
           // which says it can be a number which matches the implementation.
           flag: args[1],
         });
+        previousPath = undefined;
+        return content;
       } catch { }
-
+      previousPath = undefined;
       return originalReadFile.apply(this, args);
     };
   } else {
