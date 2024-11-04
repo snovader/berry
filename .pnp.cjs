@@ -39271,6 +39271,8 @@ const Filename = {
   pnpCjs: `.pnp.cjs`,
   pnpData: `.pnp.data.json`,
   pnpEsmLoader: `.pnp.loader.mjs`,
+  registerHooks: `register.mjs`,
+  registerHooksTs: `register.ts`,
   rc: `.yarnrc.yml`,
   env: `.env`
 };

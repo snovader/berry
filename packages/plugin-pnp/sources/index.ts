@@ -23,6 +23,8 @@ export const getPnpPath = (project: Project) => {
     cjs: ppath.join(project.cwd, Filename.pnpCjs),
     data: ppath.join(project.cwd, Filename.pnpData),
     esmLoader: ppath.join(project.cwd, Filename.pnpEsmLoader),
+    registerHooks: ppath.join(project.cwd, `hooks`, Filename.registerHooks),
+    registerHooksTs: ppath.join(project.cwd, `hooks`, Filename.registerHooksTs),
   };
 };
 
@@ -73,7 +75,11 @@ async function setupScriptEnvironment(project: Project, env: NodeJS.ProcessEnv, 
   const pnpPath = getPnpPath(project);
   let pnpRequire = `--require ${quotePathIfNeeded(npath.fromPortablePath(pnpPath.cjs))}`;
 
-  if (xfs.existsSync(pnpPath.esmLoader))
+  const registerHooks = [pnpPath.registerHooks, pnpPath.registerHooksTs].find(path => xfs.existsSync(path));
+
+  if (registerHooks)
+    pnpRequire = `${pnpRequire} --import ${pathToFileURL(npath.fromPortablePath(registerHooks)).href}`;
+  else if (xfs.existsSync(pnpPath.esmLoader))
     pnpRequire = `${pnpRequire} --experimental-loader ${pathToFileURL(npath.fromPortablePath(pnpPath.esmLoader)).href}`;
 
   if (xfs.existsSync(pnpPath.cjs)) {
