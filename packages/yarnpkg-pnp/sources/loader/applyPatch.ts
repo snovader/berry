@@ -151,6 +151,7 @@ export function applyPatch(pnpapi: PnpApi, opts: ApplyPatchOptions) {
       const optionNames = new Set(Object.keys(options));
       optionNames.delete(`paths`);
       optionNames.delete(`plugnplay`);
+      optionNames.delete(`conditions`);
 
       if (optionNames.size > 0) {
         throw makeError(

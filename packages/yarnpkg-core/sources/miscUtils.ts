@@ -331,6 +331,7 @@ export class DefaultStream extends Transform {
 // of a web application, but is quite annoying when working with Node projects!
 
 const realRequire: NodeRequire = eval(`require`);
+realRequire.cache ??= {};
 
 function dynamicRequireNode(path: string) {
   return realRequire(npath.fromPortablePath(path));
